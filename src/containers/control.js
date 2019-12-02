@@ -73,10 +73,6 @@ const mapDispatchToProps = (dispatch) => {
 
 
 
-
-import React from 'react';
-
-
 const Table = ({ rows, columns }) => {
   const rowsHtml = [];
 
@@ -108,59 +104,60 @@ const Row = ({ columns }) => {
 const Column = () => <td />
 
 
-export default class extends React.Component {
+class TableCreation extends React.Component {
   state = {
     rows: 10,
     columns: 5
   }
 
-  changeRowCount = (count) => {
+  changeRowCount(count) {
     this.setState({ rows: count })
   }
 
-  changeColumnCount = (count) => {
+  changeColumnCount(count) {
     this.setState({ columns: count })
   }
 
   render() {
     const { rows, columns } = this.state;
     return (
-      <React.Fragment>
+      <div>
         <Table rows={rows} columns={columns} />
         <ControllerTable
-          columnHandler={this.changeColumnCount}
-          changeRowCount={this.changeRowCount} />
-      </React.Fragment>
+          columnHandler={this.changeColumnCount.bind(this)}
+          changeRowCount={this.changeRowCount.bind(this)} />
+      </div>
     )
   }
 }
 
-const ControllerTable = ({ columnHandler, changeRowCount }) => {
-  const inputColumn = React.createRef();
-  const inputRow = React.createRef();
+class ControllerTable extends React.Component {
 
-  const renderTable = () => {
-    const columnCount = inputColumn.current.value;
-    const rowCount = inputRow.current.value;
+  renderTable() {
+    const columnCount = this.refs.column.value;
+    const rowCount = this.refs.row.value
 
-    columnHandler(columnCount);
-    changeRowCount(rowCount);
+    this.props.columnHandler(columnCount);
+    this.props.changeRowCount(rowCount);
+  };
+
+  render() {
+    return (
+      <div>
+        <label htmlFor="">
+          Enter ROWS:
+<input ref='row' type="text" />
+        </label>
+        <br />
+        <label htmlFor="">
+          Enter COLUMNS:
+<input ref='column' type="text" />
+        </label>
+        <br />
+        <button onClick={this.renderTable.bind(this)}>Show</button>
+      </div>
+    )
   }
-  return (
-    <>
-      <label htmlFor="">
-        Enter ROWS:
-<input ref={inputRow} type="text" />
-      </label>
-      <br />
-      <label htmlFor="">
-        Enter COLUMNS:
-<input ref={inputColumn} type="text" />
-      </label>
-      <br />
-      <button onClick={renderTable}>Show</button>
-    </>
-  )
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Control)
